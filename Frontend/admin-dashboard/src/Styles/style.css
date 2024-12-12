@@ -1,0 +1,117 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h3 {
+    color: #333;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color:antiquewhite;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    padding-top: 20px;
+  }
+  
+  .sidebar a {
+    color: black;
+    text-decoration: none;
+    padding: 15px 20px;
+    display: block;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar a:hover {
+    background-color: #34495e;
+  }
+  
+  /* Content Styles */
+  .content {
+    margin-left: 220px;
+    padding: 20px;
+  }
+  
+  /* Card Styles */
+  .card-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    flex: 1;
+    margin-right: 10px;
+    min-width: 200px;
+  }
+  
+  .card h3 {
+    margin-bottom: 10px;
+  }
+  
+  /* Chart Styles */
+  .chart-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Project Section Styles */
+  .dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .project-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 100%;
+  }
+  
+  .project-card {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  
+  .project-card .details p {
+    margin: 5px 0;
+  }
+  
+  .progress-bar-container {
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    height: 10px;
+    margin: 10px 0;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background-color: #2ecc71;
+    border-radius: 8px;
+  }
+  
+  /* Admin Dashboard Layout */
+  .admin-dashboard {
+    display: flex;
+  }
+  
