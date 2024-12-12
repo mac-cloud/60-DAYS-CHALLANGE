@@ -1,0 +1,219 @@
+/* HomePage background styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.homepage-container {
+  background-image: url('../Images/van.jpeg');  /* Replace with the actual path to your image */
+  background-size: cover;        /* Ensures the image covers the entire screen */
+  background-position: center;   /* Centers the image */
+  background-repeat: no-repeat;  /* Prevents the image from repeating */
+  height: 100vh;                 /* Full screen height */
+  width: 100%;                   /* Full width */
+  display: flex;     
+  padding-top: 60px;            /* Flex for alignment */
+  flex-direction: column;       /* Layout for children */
+  justify-content: center;      /* Center content vertically */
+  align-items: center;          /* Center content horizontally */
+}
+
+h1 {
+  color: #888585;   
+  text-align: center;                 /* White color for the text */
+  text-shadow: 2px 2px 5px #000;  /* Shadow effect for readability */
+}
+
+.navbar {
+  background: linear-gradient(to right, black, white, red, green );
+  display: flex;
+  border-radius: 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px;
+  position: fixed; /* This makes it stay at the top of the screen */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width of the page */
+  z-index: 1000; /* Makes sure it stays above other content */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar-logo h2 {
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.navbar-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links li {
+  margin: 0 15px;
+}
+
+.navbar-links a {
+  color: black;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.navbar-links a:hover {
+  color: blue; 
+}
+
+.btn {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  text-transform: uppercase;
+
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  color: #ffcc00; /* Yellow color on hover */
+}
+
+.homepage-content {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.homepage-content h1 {
+  font-size: 30px;
+  color: #333;
+}
+
+.homepage-content p {
+  font-size: 18px;
+  color: #555;
+}
+/*Signup page*/
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    background-color:beige;
+  }
+  form h2 {
+    text-align: center;
+    color: blue;
+    font-style:oblique;
+  }  
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+  }
+  
+  button {
+    padding: 4px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: green;
+  }
+  
+  p {
+    margin-top: 10px;
+    color: green;
+  }
+  
+
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  
+  h4 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2.5rem;
+    color: #0077b6;
+    border-radius: 20px;
+    background: linear-gradient(to right, black, white, red, green );
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #023e8a;
+    text-align: center;
+  }
+  
+  .category {
+    margin-bottom: 30px;
+    background-color: #e0f7fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .parks {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .park-card {
+    background: linear-gradient(to right, black, white, red, green );
+    border-radius: 12px;
+    overflow: hidden;
+    width: 330px;
+    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .park-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .park-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .park-card h3 {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 1.2rem;
+    background-color: #0077b6;
+    background: linear-gradient(to right, black, white, red, green );
+  }
