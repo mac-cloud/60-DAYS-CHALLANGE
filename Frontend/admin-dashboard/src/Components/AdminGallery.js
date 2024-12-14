@@ -1,27 +1,31 @@
 import React , { useState} from 'react';
-
+import axios from 'axios';
+import '../Styles/style.css';
 
 const AdminDashboard = () => {
     const [categories, setCategories] = useState([]);
     const [categoryName, setCategoryName] = useState('');
     const [showGallery, setShowGallery] = useState(true);
-  
+   
+
     const toggleGallery = () => setShowGallery(!showGallery);
   
     const addCategory = async () => {
       if (categoryName.trim()) {
-        const newCategory = { name: categoryName, parks: [] };
-        setCategories([...categories, newCategory]);
-        setCategoryName('');
         
         try {
-          const response = await fetch('http://localhost:5000/api/categories', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newCategory),
-          });
-          const result = await response.json();
-          console.log('Category saved:', result);
+          
+          const response = await axios.post('http://localhost:5000/api/addcategories', {
+            name: categoryName
+         
+        });
+
+     
+          const newCategory =  response.data;
+          setCategories ([...categories, newCategory]);
+          setCategoryName('');
+          alert('Category added successfully!');
+          console.log('Category saved:', newCategory);
         } catch (error) {
           console.error('Error saving category:', error);
         }
@@ -31,24 +35,29 @@ const AdminDashboard = () => {
     };
 
 
-    const addPark = async (categoryIndex, parkName, parkDesc, parkImg) => {
+    const addPark = async (categoryId, parkName, parkDesc, parkImg) => {
         if (parkName.trim() && parkDesc.trim() && parkImg) {
             const reader = new FileReader();
             reader.onloadend = async () => {
-                const newPark = { name: parkName, description: parkDesc, image: ReadableStream.result };
-                const updatedCategories = [...categories];
-                updatedCategories[categoryIndex].parks.push(newPark);
-                setCategories(updatedCategories);
+                const newPark = { 
+                  name: parkName.trim(), 
+                  description: parkDesc.trim(), 
+                  image: reader.result 
+                };
 
                 try {
-                    const response = await fetch('http://localhost:5000/api/parks', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json'},
-                        body: JSON.stringify({ categoryId: categoryIndex, park: newPark }),
-
-                    });
-                    const result = await response.json();
-                    console.log('Park saved: ', result);
+                    const response = await axios.post('http://localhost:5000/api/parks', {
+                          categoryId: categoryId, 
+                          park: newPark 
+                        }, {
+                          headers: { 'Content-Type': 'application/json' }
+                        });
+                    const updatedCategory = response.data;
+                    setCategories(categories.map(cat => 
+                      cat._id === updatedCategory._id ? updatedCategory : cat
+                    ));
+                    alert('Park added successfully!')
+                    console.log('Park saved: ', updatedCategory);
                 } catch (error) {
                     console.error('Error saving park:', error);
                 }
@@ -65,9 +74,9 @@ const AdminDashboard = () => {
             <a href="/dashboard">Dashboard</a>
             <button onClick={toggleGallery}>Gallery</button>
             <a href="/users">Users</a>
-            <a href="/metrics">Metrics</a>
+            <a href="/metric">Metrics</a>
             <a href="/payments">Payments</a>
-            <a href="/notifications">Notifications</a>
+            <a href="/notification">Notifications</a>
             <a href="/emails">Emails</a>
             <a href="/calls">Calls</a>
           </div>
@@ -92,39 +101,39 @@ const AdminDashboard = () => {
                 <button className="btn" onClick={addCategory}>Add Category</button>
                 
                 <div className="categories">
-                  {categories.map((category, categoryIndex) => (
-                    <div key={categoryIndex} className="category">
+                  {categories.map((category) => (
+                    <div key={category._id} className="category">
                       <h3>{category.name}</h3>
                       <div className="form-group">
                         <input 
                           type="text" 
                           placeholder="Park Name" 
-                          id={`park-name-${categoryIndex}`} 
+                          id={`park-name-${category._id}`} 
                         />
                         <input 
                           type="text" 
                           placeholder="Park Description" 
-                          id={`park-desc-${categoryIndex}`} 
+                          id={`park-desc-${category._id}`} 
                         />
                         <input 
                           type="file" 
-                          id={`park-img-${categoryIndex}`} 
+                          id={`park-img-${category._id}`} 
                         />
                       </div>
                       <button 
                         className="btn" 
                         onClick={() => {
-                          const parkName = document.getElementById(`park-name-${categoryIndex}`).value;
-                          const parkDesc = document.getElementById(`park-desc-${categoryIndex}`).value;
-                          const parkImg = document.getElementById(`park-img-${categoryIndex}`).files[0];
-                          addPark(categoryIndex, parkName, parkDesc, parkImg);
+                          const parkName = document.getElementById(`park-name-${category._id}`).value;
+                          const parkDesc = document.getElementById(`park-desc-${category._id}`).value;
+                          const parkImg = document.getElementById(`park-img-${category._id}`).files[0];
+                          addPark(category._id, parkName, parkDesc, parkImg);
                         }}
                       >
                         Add Park
                       </button>
                       <div className="parks">
-                        {category.parks.map((park, parkIndex) => (
-                          <div key={parkIndex} className="park">
+                        {category.parks.map((park) => (
+                          <div key={park._id} className="park">
                             <h4>{park.name}</h4>
                             <p>{park.description}</p>
                             <img src={park.image} alt={park.name} />

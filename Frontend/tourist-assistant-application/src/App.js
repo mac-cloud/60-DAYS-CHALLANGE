@@ -4,8 +4,13 @@ import './App.css';
 import './pages/HomePage';
 import HomePage from './pages/HomePage';
 import Gallery from './pages/Gallery';
-import SignUp from './pages/SignUp'
-import LoginPage from './pages/LoginPage'
+import SignUp from './pages/SignUp';
+import Contact from './pages/Contact';
+import LoginPage from './pages/LoginPage';
+import GuidePage from './pages/GuidePage';
+
+
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -14,6 +19,8 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/contact" element={<Contact/>} />
+        <Route path="/guide" element={<GuidePage/>} />
       </Routes>
     </BrowserRouter>
   );

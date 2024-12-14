@@ -1,49 +1,71 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import '../styles/Style.css';
-import lion from'../Images/lion.jpeg';
-import safari from '../Images/safari.jpeg'
+import axios from 'axios';
+
 const Gallery = () => {
-    const parksData = [
-        { name: "Nairobi national Part", category: "Wildlife Park", imageUrl: lion},
-        { name: "Amboseli national Park", category: "Wildlife Park", imageUrl:lion},
-        { name: "Amboseli national Park", category: "Wildlife Park", imageUrl:lion},
-        { name: "Amboseli national Park", category: "Wildlife Park", imageUrl:lion},
-        { name: "Amboseli national Park", category: "Wildlife Park", imageUrl:lion},
-        { name: "Amboseli national Park", category: "Wildlife Park", imageUrl:lion},
-        { name: "Mount Kenya national Park", category: "Adventure Park", imageUrl:safari},
-        { name: "Masaai Mara national Park", category: "Mountain Park", imageUrl:lion},
-        { name: "Masaai Mara national Park", category: "Mountain Park", imageUrl:lion},
-        { name: "Masaai Mara national Park", category: "Mountain Park", imageUrl:lion},
-    ];
+    const [categories, setCategories] = useState([]);  
+   
+ 
+    //fetch categories
+    useEffect(() => {
+      const fetchCategories = async () => {
+        
+        try {
+          const response = await axios.get('http://localhost:5000/categories');
+          setCategories(response.data);
 
-    //group parks by catergory
-    const categories = parksData.reduce((acc, park) => {
-        if (!acc[park.category]) {
-            acc[park.category] = [];
+          if (!response.ok) {
+            throw new Error('Failed to fetch categories');
+          }
+          const data = await response.json();
+          setCategories(data);
+
+        } catch (error) {
+          console.error('Error fetching categories:', error);
         }
-        acc[park.category].push(park);
-        return acc;
-    }, {});
+      };
 
+      fetchCategories();
+    },[]);
+
+   
     return (
         <div>
           <h4>Tourist Site in Kenya</h4>
           <div>
-            {Object.keys(categories).map((category) => (
-              <div key={category} className="category">
-                <h2>{category}</h2>
-                <div className="parks">
-                  {categories[category].map((park) => (
-                    <div key={park.name} className="park-card">
-                      <img src={park.imageUrl} alt={park.name} className="park-image" />
-                     
+          <div className="section">
+            <h2>Gallery</h2>
+
+            <div className="categories">
+              {categories.length === 0 ? (
+                <p>No categories available</p> // Display message if no categories
+              ) : (
+                categories.map((category) => (
+                  <div key={category._id} className="category">
+                    <h3>{category.name}</h3>
+                    <div className="parks">
+                      {category.parks.length === 0 ? (
+                        <p>No parks available for this category</p> // Display message if no parks
+                      ) : (
+
+                        
+                        category.parks.map((park) => (
+                          <div key={park._id} className="park">
+                            <h4>{park.name}</h4>
+                            <p>{park.description}</p>
+                            <img src={park.image} alt={park.name} />
+                          </div>
+                        ))
+                      )}
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+      
+      </div>
+    </div>
       );
     };
     

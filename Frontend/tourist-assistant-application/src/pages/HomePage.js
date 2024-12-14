@@ -24,6 +24,12 @@ const HomePage = () => {
                         <Link to="/gallery">Gallery</Link>
                     </li>
                     <li>
+                         <Link to="/contact">Contact</Link>
+                    </li>
+                    <li>
+                        <Link to="/guide">Guide</Link>
+                    </li>
+                    <li>
                         <button>
                         <Link to="/signup" className="btn">Sign Up</Link>
                         </button>
@@ -38,7 +44,9 @@ const HomePage = () => {
 
             {/* Main content */}
             <div className="homepage-content">
-                <h1>Welcome to the Travel Chatbot</h1>
+                <h2>You are a Guide right?</h2>
+                <button>Create Account</button>
+                <h1>Welcome to the Virtual Travel </h1>
                 <p>Explore the best of African tourism with AI-powered assistance.</p>
             </div>
         </div>
