@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs'); 
 const User = require('../models/User');
+const Category = require('../models/Category');
 
 // User Sign-up Route
 router.post('/signup', async (req, res) => {
@@ -38,5 +39,61 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ message: 'Server error. Please try again later.' });
   }
 });
+
+// new category
+
+//router.post('/categories', async (req, res) => {
+//  const { name } = req.body;
+//
+//  if (!name) {
+//    return res.status(400).json({message: 'Category name is required'});
+//  }
+//
+//  try {
+//    const category = new Category({ name, parks: [] });
+//    await category.save();
+//    res.status(201).json(category);
+//  } catch (error ){
+//    console.error('Error saving category:', error);
+//    res.status(500).json({ message: 'Server error'});
+//  } 
+//});
+
+//adding new park to specific category
+router.post('/parks', async (req, res) => {
+  const { categoryId, park } = req.body;
+
+  if (!categoryId || !park) {
+    return res.status(400).json({ message: 'Category ID and park details are required'});
+
+  }
+  try {
+    const category = await Category.findById(categoryId);
+
+    if (!category)  {
+      return res.status(404).json({ message: 'Category not found'});
+    }
+
+    category.parks.push(park);
+    await category.save();
+    res.status(201).json({ message: 'Park added successfully' });
+  } catch (error){
+    console.error('Error adding park', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+// get categories
+//router.get('/api/categories', async(req, res) => {
+//      try {
+//        const categories = await Category.find();
+//        res.status(200).json(categories);
+//
+//      } catch (error) {
+//        console.error(error);
+//        res.status(500).json({ message: 'Server Error'});
+//      }
+//});
 
 module.exports = router;
