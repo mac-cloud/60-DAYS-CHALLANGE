@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Route, Routes, BrowserRouter} from 'react-router-dom';
+import GuideAccount from './components/GuideAccount';
+import HikingLocation from './components/HikingLocations';
+import TentRentals from './components/TentRentals';
+import LocationDetails from './components/LocationDetails';
+import GuideList from './components/GuideList';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+    <Routes>
+          <Route path="/" element={<GuideList/>}/>
+          <Route path="/hiking" element={<HikingLocation/>} />
+          <Route path="/tent" element={<TentRentals/>} />
+          <Route path="/guide" element={<GuideAccount/>} />
+          <Route path="/location" element={<LocationDetails/>} />
+    </Routes>
+    </BrowserRouter>
   );
 }
 

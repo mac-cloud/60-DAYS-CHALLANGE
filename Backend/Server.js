@@ -4,10 +4,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes.js');
 const bodyParser = require('body-parser');
-const Category = require('./models/Category')
-const Messages = require('./models/Messages')
-const User = require('./models/User')
-const Metrics = require ('./models/Metrics')
+const multer = require('multer');
+const Category = require('./models/Category');
+const Messages = require('./models/Messages');
+const User = require('./models/User');
+const Metrics = require ('./models/Metrics');
+const Guide = require('./models/Booking/Guide');
+const hikingRoutes = require('./routes/hikingRoutes.js');
+//const guideRoutes = require('./routes/guideRoutes.js');
 require ('dotenv').config();
 
 
@@ -18,7 +22,10 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true}));
 //Middleware
 app.use(express.json());
 app.use(cors( {
-    origin: [ 'http://localhost:3000', 'http://localhost:3001']
+    origin: [ 'http://localhost:3000',
+              'http://localhost:3001', 
+              'http://localhost:3002'
+            ]
 }));
 
 //Database connection
@@ -34,7 +41,8 @@ mongoose.connect(dbURI, {
       //POST
      //app.use('/admin', adminRoutes);
     app.use('/api/auth',authRoutes);
-   
+    app.use('/api/locations', hikingRoutes);
+    //app.use('/api/send', guideRoutes);
 
     app.post('/api/addcategories', async (req, res) => {
       const { name } = req.body;
@@ -244,11 +252,81 @@ app.get('/api/weekly-count', async (req, res) => {
 });
 
 
+
+
+//Guide account
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+
+      cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random()* 1E9);
+      cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
+
+app.post('/api/guide', upload.single('profileImage'), async (req, res) => {
+  try {
+      const {
+          name,
+          email,
+          password,
+          areaOfSpecialization,
+          experience,
+          description,
+          placesVisited
+      } = req.body;
+
+      // Create a new Guide document
+      const guide = new Guide({
+          name,
+          email,
+          password: hashedPassword,
+          areaOfSpecialization,
+          experience,
+          description,
+          profileImage: req.file?.filename, 
+          placesVisited: placesVisited.split(',').map(place => place.trim()) // Convert string to array
+      });
+
+      await guide.save();
+      res.status(201).json({ message: 'Guide registered successfully', guide });
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+
+// GET all guides categorized by area of specialization
+app.get('/api/getguides', async (req, res) => {
+  try {
+      const guides = await Guide.find();
+      
+      // Group guides by 'areaOfSpecialization'
+      const categorizedGuides = guides.reduce((acc, guide) => {
+          const area = guide.areaOfSpecialization;
+          if (!acc[area]) {
+              acc[area] = [];
+          }
+          acc[area].push(guide);
+          return acc;
+      }, {});
+
+      res.status(200).json(categorizedGuides);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => 
      console.log(`Server running on port ${PORT}`));
-
-
 
 
 
