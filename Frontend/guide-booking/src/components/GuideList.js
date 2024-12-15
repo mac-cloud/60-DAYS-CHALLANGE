@@ -4,17 +4,6 @@ import '../styles/Styles.css';
 const GuideList = () => {
     const [guides, setGuides] = useState({});
     const [loading, setLoading] = useState(true);
-    const [imagePreview, setImagePreview] = useState(null);
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setFormData({ ...formData, profileImage: file });
-    
-        // Generate preview of the image
-        const previewUrl = URL.createObjectURL(file);
-        setImagePreview(previewUrl);
-      };
-
 
     useEffect(() => {
         const getGuides = async () => {
