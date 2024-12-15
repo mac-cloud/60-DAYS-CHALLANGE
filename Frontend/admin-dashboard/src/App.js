@@ -5,7 +5,7 @@ import AdminGallery from './Components/AdminGallery';
 import AdminUser from './Components/AdminUser';
 import Metric from './Components/Metric';
 import Notification from './Components/Notification';
-
+import HikingLocations from './Components/Pages/HikingLocations';
 
 function App() {
   return (
@@ -16,6 +16,7 @@ function App() {
       <Route path="/users" element={<AdminUser/>} />
       <Route path="/metric" element={<Metric/>} />
       <Route path="/notification" element={<Notification/>} />
+      <Route path="/hiking" element={<HikingLocations/>} />
     </Routes>
     </BrowserRouter>
   );

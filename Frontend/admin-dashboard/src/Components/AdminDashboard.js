@@ -13,6 +13,7 @@ const Sidebar = () => {
     <Link to="/metric">Metrics</Link>
     <Link to="/payments">Payments</Link>
     <Link to="/notification">Notifications</Link>
+    <Link to="/hiking">Hiking</Link>
 
     </div>
   );
