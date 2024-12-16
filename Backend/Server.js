@@ -9,10 +9,13 @@ const Category = require('./models/Category');
 const Messages = require('./models/Messages');
 const User = require('./models/User');
 const Metrics = require ('./models/Metrics');
+const HikingLocation = require('./models/Booking/HikingLocation');
 const Guide = require('./models/Booking/Guide');
-const hikingRoutes = require('./routes/hikingRoutes.js');
+//const hikingRoutes = require('./routes/hikingRoutes.js');
 //const guideRoutes = require('./routes/guideRoutes.js');
 require ('dotenv').config();
+const path = require('path');
+const fs = require('fs');
 
 
 const app = express ();
@@ -37,11 +40,18 @@ mongoose.connect(dbURI, {
      .then(() => console.log('MongoDB connected'))
      .catch((error) => console.error('DB connection failed', error));
 
+
+     const uploadDir = path.join(__dirname, 'uploads');
+     if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploaddir);
+     }
+
+
 //Routes
       //POST
      //app.use('/admin', adminRoutes);
     app.use('/api/auth',authRoutes);
-    app.use('/api/locations', hikingRoutes);
+   
     //app.use('/api/send', guideRoutes);
 
     app.post('/api/addcategories', async (req, res) => {
@@ -266,8 +276,40 @@ const storage = multer.diskStorage({
       cb(null, uniqueSuffix + '-' + file.originalname);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
+
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+const  uploadGuideImage = async (req, res) => {
+  try {
+    const guideId = req.params.id;
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded"});
+    }
+
+
+    const imagePath = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+
+    const updatedGuide = await Guide.findByIdAndUpdate(
+      guideId,
+      { profileImage: imagePath },
+      { new: true }
+    );
+    if (!updatedGuide) {
+      return res.status(404).json({ message: 'Guide not found'});
+    }
+
+    res.status(200).json({ message: 'Image uploaded successfully'});
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ message: 'Server error'});
+  }
+}
 
 app.post('/api/guide', upload.single('profileImage'), async (req, res) => {
   try {
@@ -281,16 +323,18 @@ app.post('/api/guide', upload.single('profileImage'), async (req, res) => {
           placesVisited
       } = req.body;
 
-      // Create a new Guide document
+      const profileImagePath = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
+
+
       const guide = new Guide({
           name,
           email,
-          password: hashedPassword,
+          password,
           areaOfSpecialization,
-          experience,
+          experience: parseInt(experience),
           description,
-          profileImage: req.file?.filename, 
-          placesVisited: placesVisited.split(',').map(place => place.trim()) // Convert string to array
+          profileImage: profileImagePath, 
+          placesVisited: Array.isArray(placesVisited) ? placesVisited : placesVisited.split(',').map(place => place.trim())
       });
 
       await guide.save();
@@ -300,6 +344,7 @@ app.post('/api/guide', upload.single('profileImage'), async (req, res) => {
       res.status(500).json({ message: 'Server error', error });
   }
 });
+app.post('/upload-image/:id', upload.single('profileImage'),uploadGuideImage );
 
 
 // GET all guides categorized by area of specialization
@@ -320,6 +365,26 @@ app.get('/api/getguides', async (req, res) => {
       res.status(200).json(categorizedGuides);
   } catch (error) {
       res.status(500).json({ error: error.message });
+  }
+});
+
+//hiking locations 
+app.post('/api/locations', upload.single('image'), async (req, res) => {
+  try {
+    const { name, description, guides } = req.body;
+    const image = req.file ? `uploads/${req.file.filename}` : null;
+    const newLocation = new HikingLocation({
+      name,
+      description,
+      image,
+      guides: guides.split(',').map(guide => guide.trim())  // Convert comma-separated string to array
+    });
+
+    await newLocation.save();
+    res.status(201).json({ message: 'Hiking location added successfully!', location: newLocation });
+  } catch (error) {
+    console.error('Error adding location:', error);
+    res.status(500).json({ message: 'Failed to add hiking location', error });
   }
 });
 

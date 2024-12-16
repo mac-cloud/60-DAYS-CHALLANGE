@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../../Styles/style.css';
+import { useNavigate} from 'react-router-dom';  // React Router for navigation
+
 const AdminHikingLocationForm = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -8,6 +9,8 @@ const AdminHikingLocationForm = () => {
         image: null,
         guides: ''
     });
+    
+    const history = useNavigate();  // For page redirection
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -32,6 +35,9 @@ const AdminHikingLocationForm = () => {
             });
             alert('Hiking location added successfully!');
             setFormData({ name: '', description: '', image: null, guides: '' });
+
+            // Redirect to another page (e.g., locations list page)
+            history.push('/locations');
         } catch (error) {
             console.error('Error adding location:', error);
             alert('Failed to add hiking location');
