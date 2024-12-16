@@ -8,7 +8,7 @@ const GuideRegistration = () => {
         email: '',
         password: '',
         areaOfSpecialization: '',
-        yearsOfExperience: '',
+        experience: '',
         description: '',
         profileImage: null,
         placesVisited: ''
@@ -46,7 +46,7 @@ const GuideRegistration = () => {
                 email: '',
                 password: '',
                 areaOfSpecialization: '',
-                yearsOfExperience: '',
+                experience: '',
                 description: '',
                 profileImage: null,
                 placesVisited: ''
@@ -99,9 +99,9 @@ const GuideRegistration = () => {
 
                 <input
                     type="number"
-                    name="yearsOfExperience"
+                    name="experience"
                     placeholder="Years of Experience"
-                    value={formData.yearsOfExperience}
+                    value={formData.experience}
                     onChange={handleChange}
                     required
                 />

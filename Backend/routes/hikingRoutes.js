@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //  new hiking location
-router.post('/api/locations', upload.single('image'), async (req, res) => {
+router.post('/locations', upload.single('image'), async (req, res) => {
     const { name, description, guides } = req.body;
     const imagePath = req.file ? req.file.path : '';
 
