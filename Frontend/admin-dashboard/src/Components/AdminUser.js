@@ -2,7 +2,7 @@ import React ,{ useEffect, useState } from 'react';
 import axios from 'axios';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale } from 'chart.js';
-import '../Styles/style.css';
+import 'Styles/style.css';
 
 ChartJS.register( Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale );
 

@@ -8,7 +8,7 @@ import SignUp from './pages/SignUp';
 import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import GuidePage from './pages/GuidePage';
-
+import TentList from './pages/TentList';
 
 
 const App = () => {
@@ -21,6 +21,7 @@ const App = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact/>} />
         <Route path="/guide" element={<GuidePage/>} />
+        <Route path="/tents" element={<TentList/>} />
       </Routes>
     </BrowserRouter>
   );

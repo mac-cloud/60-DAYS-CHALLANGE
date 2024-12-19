@@ -11,10 +11,15 @@ const User = require('./models/User');
 const Metrics = require ('./models/Metrics');
 const HikingLocation = require('./models/Booking/HikingLocation');
 const Guide = require('./models/Booking/Guide');
+const Tent = require('./models/Booking/Tent');
+const TouristBooking = require('./models/Booking/TouristBooking');
+const Service = require('./models/Booking/Services')
 //const hikingRoutes = require('./routes/hikingRoutes.js');
 //const guideRoutes = require('./routes/guideRoutes.js');
-require ('dotenv').config();
+const PDFDocument = require('pdfkit');
+const nodemailer = require('nodemailer');
 const path = require('path');
+require ('dotenv').config();
 const fs = require('fs');
 
 
@@ -388,6 +393,199 @@ app.post('/api/locations', upload.single('image'), async (req, res) => {
   }
 });
 
+// GET API to fetch all hiking locations
+app.get('/api/locations', async (req, res) => {
+  try {
+      // Populate 'guides' if it's a reference
+      const locations = await HikingLocation.find().populate('guides');
+      res.status(200).json(locations);
+  } catch (error) {
+      console.error('Error fetching hiking locations:', error);
+      res.status(500).json({ message: 'Server Error', error });
+  }
+});
+
+
+app.post('/api/services', upload.single('serviceImage'),  async (req,res) => {
+  try {
+      const { serviceName, serviceDescription } = req.body;
+      const serviceImage = req.file ? `uploads/${req.file.filename}` :null;
+      const newService = new Service({
+          serviceName,
+          serviceDescription,
+          serviceImage,
+      });
+
+      await newService.save();
+      res.status(201).json({ message: 'Service added successfully'});
+  } catch (error) {
+      console.error('Error adding service:', error);
+      res.status(500).json({ message: 'Failed to add service'});
+  }
+
+});
+
+app.get('/api/services', async (req, res) => {
+  try {
+    const services = await Service.find();
+    res.status(201).json(services);
+  } catch (error) {
+    console.error('Error fetching service details', error);
+    res.status(500).json({ message: 'Server error', error});
+  }
+});
+
+
+
+
+app.post('/api/tent', upload.fields([
+  { name: 'tentImage', maxCount: 1 }, 
+  { name: 'packageImage', maxCount: 1 }
+]), async (req, res) => {
+  try {
+      const { name, description, dayTimePrice, nightPrice } = req.body;
+
+      const dayPrice = parseFloat(dayTimePrice);
+      const nightPriceNum = parseFloat(nightPrice);
+
+      if (isNaN(dayPrice) || isNaN(nightPriceNum)) {
+        return res.status(400).json({ message: 'Invalid dayTimePrice or nightPrice. Please provide valid numbers.' });
+      }
+
+      const tentImage = req.files['tentImage'] ? `uploads/${req.files['tentImage'][0].filename}` : null;
+      const packageImage = req.files['packageImage'] ? `uploads/${req.files['packageImage'][0].filename}` : null;
+
+      const newTent = new Tent({
+          name,
+          description,
+          tentImage,
+          packageImage,
+          dayTimePrice: dayPrice,
+          nightPrice: nightPriceNum,
+      });
+
+      await newTent.save();
+
+      res.status(201).json({ message: 'Tent details added successfully', tent: newTent });
+
+  } catch (error) {
+      console.error('Error adding tent', error);
+      res.status(500).json({ message: 'Failed to add tent details', error: error.message });
+  }
+});
+
+
+app.get('/api/tents', async (req, res) => {
+  try {
+    const tent = await Tent.find();
+    res.json(tent);
+  } catch (error) {
+    console.error('Error fetching tent', error);
+    res.status(500).json({ message: 'Server Error', error});
+  }
+});
+
+
+
+
+// Generate the PDF receipt
+const generatePDFReceipt = (bookingData) => {
+  const receiptsDir = path.join(__dirname, 'receipts');
+
+
+  if (!fs.existsSync(receiptsDir)) {
+    fs.mkdirSync(receiptsDir);
+  }
+
+  const filePath = path.join(receiptsDir, `${bookingData.touristName}-receipt.pdf`);
+
+  const doc = new PDFDocument();
+  doc.text(`Booking Receipt`, { align: 'center' })
+     .moveDown()
+     .text(`Location: ${bookingData.locationName}`)
+     .text(`Name: ${bookingData.touristName}`)
+     .text(`Email: ${bookingData.email}`)
+     .text(`Phone: ${bookingData.phone}`)
+     .text(`Date: ${bookingData.date}`)
+     .text(`Number of People: ${bookingData.numberOfPeople}`)
+     .text(`Special Requests: ${bookingData.specialRequests || 'None'}`);
+
+
+  doc.pipe(fs.createWriteStream(filePath));
+  doc.end();
+  return filePath;
+};
+
+// Send the email with the receipt attached
+const sendReceipt = (email, bookingData) => {
+  return new Promise((resolve, reject) => {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'yawakarua@gmail.com',
+        pass: 'yjhr yhjz muuu lsta',  
+      },
+    });
+
+    const filePath = generatePDFReceipt(bookingData);
+
+    const mailOptions = {
+      from: 'yawakarua@gmail.com',
+      to: email,  
+      subject: 'Your Booking Receipt',
+      text: 'Please find your receipt attached.',
+      attachments: [
+        {
+          filename: 'receipt.pdf',
+          path: filePath,
+        },
+      ],
+    };
+
+    // Send email and handle success or failure
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        reject({ success: false, message: 'Error sending email', error: error });
+      } else {
+        console.log('Receipt email sent: ' + info.response);
+        resolve({ success: true, message: 'Email sent successfully', info: info });
+      }
+    });
+  });
+};
+
+// API route to handle bookings
+app.post('/api/bookings', async (req, res) => {
+  try {
+    const { locationName, touristName, email, phone, date, numberOfPeople, specialRequests } = req.body;
+    
+    const newBooking = new TouristBooking({
+      locationName,
+      touristName,
+      email,
+      phone,
+      date,
+      numberOfPeople,
+      specialRequests,
+    });
+    await newBooking.save();
+    
+    // Send the receipt email and handle the result asynchronously
+    const emailStatus = await sendReceipt(email, req.body);
+    
+    // Send the appropriate response based on email success or failure
+    if (emailStatus.success) {
+      res.status(200).send({ message: 'Booking successful, receipt sent to email' });
+    } else {
+      res.status(500).send({ message: 'Booking successful, but failed to send email', error: emailStatus.error });
+    }
+    
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    res.status(500).send('Internal server error');
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => 
