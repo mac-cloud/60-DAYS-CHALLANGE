@@ -1,6 +1,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes.js');
 const bodyParser = require('body-parser');
@@ -21,8 +22,10 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 require ('dotenv').config();
 const fs = require('fs');
-
-
+const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
+const emailAddress = process.env.EMAIL;
+const passwordEmail = process.env.PASSWORD;
+console.log('API Key:', apiKey);
 const app = express ();
 
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -105,7 +108,7 @@ mongoose.connect(dbURI, {
     app.get('/categories', async (req, res) => {
       try {
         const categories = await Category.find(); 
-        console.log('Categories Fetched:', categories);
+        
         res.status(200).json(categories);
       } catch (error) {
       console.error("Error fetching categories:", error.message);
@@ -398,6 +401,11 @@ app.get('/api/locations', async (req, res) => {
   try {
       // Populate 'guides' if it's a reference
       const locations = await HikingLocation.find().populate('guides');
+
+      if (locations.length === 0) {
+        return res.status(404).json({ message: 'No hiking locations found'})
+      }
+      
       res.status(200).json(locations);
   } catch (error) {
       console.error('Error fetching hiking locations:', error);
@@ -522,8 +530,8 @@ const sendReceipt = (email, bookingData) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'yawakarua@gmail.com',
-        pass: 'yjhr yhjz muuu lsta',  
+        user: emailAddress,
+        pass: passwordEmail,  
       },
     });
 
@@ -584,6 +592,32 @@ app.post('/api/bookings', async (req, res) => {
   } catch (error) {
     console.error('Error creating booking:', error);
     res.status(500).send('Internal server error');
+  }
+});
+
+
+//chatbot
+
+app.post('/api/chatbot', async (req, res) => {
+  const { messages } = req.body;
+
+  try {
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', 
+      {
+          model: "gpt-3.5-turbo",
+          messages: messages
+      }, 
+      {
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+          }
+      });
+
+      res.json(response.data);
+  } catch (error) {
+      console.error('Error communicating with OpenAI:', error.response ? error.response.data : error.message);
+      res.status(500).json({ error: 'Something went wrong. Please try again later.' });
   }
 });
 

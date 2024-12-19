@@ -9,7 +9,7 @@ import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import GuidePage from './pages/GuidePage';
 import TentList from './pages/TentList';
-
+import ChatBot from './components/ChatBot';
 
 const App = () => {
   return (
@@ -22,6 +22,7 @@ const App = () => {
         <Route path="/contact" element={<Contact/>} />
         <Route path="/guide" element={<GuidePage/>} />
         <Route path="/tents" element={<TentList/>} />
+        <Route path="/chatbot" element={<ChatBot/>} />
       </Routes>
     </BrowserRouter>
   );

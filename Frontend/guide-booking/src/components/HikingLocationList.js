@@ -16,18 +16,22 @@ const BookingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookingData, setBookingData] = useState(null);
   const [numberOfDays, setNumberOfDays] = useState(1);
+  // eslint-disable-next-line
   const [tentPackage, setTentPackage] = useState(false);
   const [isTentModalOpen, setIsTentModalOpen] = useState(false);
-    // eslint-disable-next-line no-unused-vars
   const [selectedTent, setSelectedTent] = useState(null);
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLocations = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/locations');
-        setLocations(response.data);
+        if (Array.isArray(response.data)) {
+          setLocations(response.data);
+        } else {
+          console.error('Expected an array but got:', response.data);
+        }
       } catch (error) {
         console.error('Error fetching locations:', error);
       }
@@ -47,17 +51,20 @@ const BookingPage = () => {
   const handleNumberOfDaysChange = (e) => {
     const days = e.target.value;
     setNumberOfDays(days);
-    if (days > 1) {
-      setIsTentModalOpen(true);
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (numberOfDays > 1 && !selectedTent) {
-      alert('Please select a tent option before booking.');
-      return;
+
+    if (numberOfDays > 1) {
+      setIsTentModalOpen(true);
+    } else {
+      // If no tent is needed, submit the booking data directly
+      submitBookingData();
     }
+  };
+
+  const submitBookingData = async () => {
     try {
       const bookingData = {
         locationName: selectedLocation.name,
@@ -68,8 +75,10 @@ const BookingPage = () => {
         numberOfPeople,
         numberOfDays,
         specialRequests,
-        tentPackage,
+        tentPackage: selectedTent ? true : false, // Tent package is true if selectedTent is not null
+        selectedTent,
       };
+
       await axios.post('http://localhost:5000/api/bookings', bookingData);
       alert('Booking Successful! A receipt has been sent to your email.');
       setBookingData(bookingData);
@@ -114,14 +123,17 @@ const BookingPage = () => {
     doc.save(fileName);
   };
 
-  const handleTentSelect = () => {
-    window.location.href = 'http://localhost:3001/tents';
+  const handleTentSelect = (tent) => {
+    setSelectedTent(tent);
+    setTentPackage(true);
     setIsTentModalOpen(false);
+    submitBookingData(); // Submit data after tent selection
   };
 
   const handleContinueWithoutTent = () => {
     setTentPackage(false);
     setIsTentModalOpen(false);
+    submitBookingData(); // Submit data without tent selection
   };
 
   const handleCloseTentModal = () => {
@@ -217,7 +229,8 @@ const BookingPage = () => {
               &times;
             </button>
             <h2>Choose Tent Package</h2>
-            <button onClick={handleTentSelect}>Select Tent</button>
+            <button onClick={() => handleTentSelect('Basic Tent')}>Select Basic Tent</button>
+            <button onClick={() => handleTentSelect('Premium Tent')}>Select Premium Tent</button>
             <button onClick={handleContinueWithoutTent}>Continue Without Tent</button>
           </div>
         </div>
