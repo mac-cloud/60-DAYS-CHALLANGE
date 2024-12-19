@@ -6,6 +6,7 @@ const LocationDetails = ({ location, onBack }) => {
 
       return (
         <div className="location-details">
+          <p>Welcome here to get details about your location of hiking.</p>
             <button onClick={(onBack)}>Back</button>
             <h2>{location.name}</h2>
             <img src="{location.image}" alt={location.name} />
@@ -16,7 +17,7 @@ const LocationDetails = ({ location, onBack }) => {
                 <div key={index}>
                     <strong>{guide.name}</strong> - {guide.email}
                     <button>Request a Call</button>
-                    <button>Continuem to Booking</button>
+                    <button>Continue to Booking</button>
                     </div>
             ))}
         </div>

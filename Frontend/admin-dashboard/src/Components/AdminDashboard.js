@@ -14,7 +14,8 @@ const Sidebar = () => {
     <Link to="/payments">Payments</Link>
     <Link to="/notification">Notifications</Link>
     <Link to="/hiking">Hiking</Link>
-
+    <Link to="/tent">Tent</Link>
+    <Link to="/services">Services</Link>
     </div>
   );
 };

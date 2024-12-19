@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate} from 'react-router-dom';  // React Router for navigation
-
+import '../../Styles/style.css';
 const AdminHikingLocationForm = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -9,8 +8,7 @@ const AdminHikingLocationForm = () => {
         image: null,
         guides: ''
     });
-    
-    const history = useNavigate();  // For page redirection
+
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -29,6 +27,10 @@ const AdminHikingLocationForm = () => {
         formDataToSend.append('image', formData.image);
         formDataToSend.append('guides', formData.guides);
 
+        //convert user input array to a string
+          const guideIds = formData.guides.split(',').map(guide => guide.trim());
+          formDataToSend.append('guide', JSON.stringify(guideIds));
+
         try {
             await axios.post('http://localhost:5000/api/locations', formDataToSend, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -36,8 +38,8 @@ const AdminHikingLocationForm = () => {
             alert('Hiking location added successfully!');
             setFormData({ name: '', description: '', image: null, guides: '' });
 
-            // Redirect to another page (e.g., locations list page)
-            history.push('/locations');
+            
+            
         } catch (error) {
             console.error('Error adding location:', error);
             alert('Failed to add hiking location');

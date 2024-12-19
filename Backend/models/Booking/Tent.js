@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 
 const TentSchema = new mongoose.Schema({
     name: String,
-    image: String,
-    price: Number,
+    tentImage: String,
+    packageImage: String,
+    description: String,
+    dayTimePrice: Number,
+    nightPrice: Number,
 });
-
-module.exports = mongoose.model('Tent', TentSchema);
+const Tent = mongoose.model('Tent', TentSchema);
+module.exports = Tent;
