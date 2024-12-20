@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/Styles.css';
 import { jsPDF } from 'jspdf';
@@ -16,12 +15,8 @@ const BookingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bookingData, setBookingData] = useState(null);
   const [numberOfDays, setNumberOfDays] = useState(1);
-  // eslint-disable-next-line
-  const [tentPackage, setTentPackage] = useState(false);
   const [isTentModalOpen, setIsTentModalOpen] = useState(false);
   const [selectedTent, setSelectedTent] = useState(null);
-  // eslint-disable-next-line
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -59,7 +54,6 @@ const BookingPage = () => {
     if (numberOfDays > 1) {
       setIsTentModalOpen(true);
     } else {
-      // If no tent is needed, submit the booking data directly
       submitBookingData();
     }
   };
@@ -124,14 +118,11 @@ const BookingPage = () => {
   };
 
   const handleTentSelect = (tent) => {
-    setSelectedTent(tent);
-    setTentPackage(true);
-    setIsTentModalOpen(false);
-    submitBookingData(); // Submit data after tent selection
+    setSelectedTent(tent); // Capture selected tent details
+    submitBookingData();
   };
 
   const handleContinueWithoutTent = () => {
-    setTentPackage(false);
     setIsTentModalOpen(false);
     submitBookingData(); // Submit data without tent selection
   };
@@ -146,14 +137,9 @@ const BookingPage = () => {
 
       <div className="location-grid">
         {locations.map((location) => (
-          <div
-            key={location._id}
-            onClick={() => handleImageClick(location)}
-            className="location-card"
-          >
+          <div key={location._id} onClick={() => handleImageClick(location)} className="location-card">
             <h3>{location.name}</h3>
             <img src={`http://localhost:5000/${location.image}`} alt={location.name} />
-            <h3>{location.name}</h3>
             <ul>
               {location.description.split('.').filter(point => point.trim() !== '').map((point, index) => (
                 <li key={index}>{point.trim()}</li>
@@ -225,12 +211,10 @@ const BookingPage = () => {
       {isTentModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button className="close-button" onClick={handleCloseTentModal}>
-              &times;
-            </button>
+            <button className="close-button" onClick={handleCloseTentModal}>&times;</button>
             <h2>Choose Tent Package</h2>
-            <button onClick={() => handleTentSelect('Basic Tent')}>Select Basic Tent</button>
-            <button onClick={() => handleTentSelect('Premium Tent')}>Select Premium Tent</button>
+            <button onClick={() => handleTentSelect({ name: 'Basic Tent' })}>Select Basic Tent</button>
+            <button onClick={() => handleTentSelect({ name: 'Premium Tent' })}>Select Premium Tent</button>
             <button onClick={handleContinueWithoutTent}>Continue Without Tent</button>
           </div>
         </div>

@@ -23,6 +23,7 @@ const App = () => {
         <Route path="/guide" element={<GuidePage/>} />
         <Route path="/tents" element={<TentList/>} />
         <Route path="/chatbot" element={<ChatBot/>} />
+        <Route path="/location-list/tents" element={<TentList/>} />
       </Routes>
     </BrowserRouter>
   );

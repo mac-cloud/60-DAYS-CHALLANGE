@@ -530,8 +530,8 @@ const sendReceipt = (email, bookingData) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: emailAddress,
-        pass: passwordEmail,  
+        user: 'yawakarua@gmail.com',
+        pass: 'ugso mtng lppr iyct',  
       },
     });
 
