@@ -60,6 +60,11 @@ const BookingPage = () => {
 
   const submitBookingData = async () => {
     try {
+         
+      const response = await fetch('http://localhost:5000/api/tents');
+         await response.json();
+       
+
       const bookingData = {
         locationName: selectedLocation.name,
         touristName,
@@ -69,9 +74,12 @@ const BookingPage = () => {
         numberOfPeople,
         numberOfDays,
         specialRequests,
-        tentPackage: selectedTent ? true : false, // Tent package is true if selectedTent is not null
+        tentPackage: selectedTent ? true : false, 
         selectedTent,
       };
+
+      const url = `http://localhost:3001/tents?bookingData=${encodeURIComponent(JSON.stringify(bookingData))}`;
+      window.location.href = url; 
 
       await axios.post('http://localhost:5000/api/bookings', bookingData);
       alert('Booking Successful! A receipt has been sent to your email.');
@@ -118,13 +126,13 @@ const BookingPage = () => {
   };
 
   const handleTentSelect = (tent) => {
-    setSelectedTent(tent); // Capture selected tent details
+    setSelectedTent(tent); 
     submitBookingData();
   };
 
   const handleContinueWithoutTent = () => {
     setIsTentModalOpen(false);
-    submitBookingData(); // Submit data without tent selection
+    submitBookingData(); 
   };
 
   const handleCloseTentModal = () => {
