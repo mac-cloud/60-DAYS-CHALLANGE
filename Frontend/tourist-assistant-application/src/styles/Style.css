@@ -556,7 +556,7 @@ button:hover {
 }
 
 .marquee-link {
-  color: #FFD700; /* Gold color to highlight the link */
+  color: #FFD700; 
   font-weight: bold;
   text-decoration: underline;
   margin-left: 5px;
@@ -565,7 +565,7 @@ button:hover {
 }
 
 .marquee-link:hover {
-  color: #fff; /* Change color on hover */
+  color: #fff; 
 }
 
 
